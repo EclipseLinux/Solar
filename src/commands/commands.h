@@ -1,17 +1,23 @@
 #pragma once
-#include "CLI/CLI.hpp"
+#include "CLI/App.hpp"
 
 namespace Commands
 {
 	namespace Install
 	{
-		auto _register(CLI::App& app) -> CLI::App;
+		auto _register(CLI::App& app) -> CLI::App*;
 		void exec(CLI::App& app);
 	}
 
 	namespace Info
 	{
-		auto _register(CLI::App& app) -> CLI::App;
+		auto _register(CLI::App& app) -> CLI::App*;
+		void exec(CLI::App& app);
+	}
+
+	namespace Init
+	{
+		auto _register(CLI::App& app) -> CLI::App*;
 		void exec(CLI::App& app);
 	}
 }

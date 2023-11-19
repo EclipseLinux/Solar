@@ -6,6 +6,15 @@
 
 auto main(int argc, const char** argv) -> int
 {
+	if (geteuid() != 0)
+	{
+		std::cout << rang::fgB::red << "Please run Solar " << rang::style::bold
+				  << "as root" << rang::style::reset << rang::fgB::red << " and try again"
+				  << rang::style::reset << std::endl;
+
+		return 1;
+	}
+
 	CLI::App app{"The package manager for Eclipse", "Solar"};
 
 	app.add_flag("-v,--verbose", G::verbose, "Enable verbose output");
@@ -13,8 +22,11 @@ auto main(int argc, const char** argv) -> int
 	app.add_flag("-y,--yes", G::yes, "Say yes to every confirmation prompt");
 	app.add_flag("-n,--nohook", G::noHook, "Disable hooks");
 
-	auto install = Commands::Install::_register(app);
-	auto info = Commands::Info::_register(app);
+	app.require_subcommand();
+
+	auto* install = Commands::Install::_register(app);
+	auto* info = Commands::Info::_register(app);
+	auto* init = Commands::Init::_register(app);
 
 	std::atexit([]() { std::cout << rang::style::reset; });
 	try
@@ -27,13 +39,17 @@ auto main(int argc, const char** argv) -> int
 		return app.exit(e);
 	}
 
-	if (app.got_subcommand(&install))
+	if (app.got_subcommand(install))
 	{
 		Commands::Install::exec(app);
 	}
-	else if (app.got_subcommand(&info))
+	else if (app.got_subcommand(info))
 	{
 		Commands::Info::exec(app);
+	}
+	else if (app.got_subcommand(init))
+	{
+		Commands::Init::exec(app);
 	}
 
 	return 0;
