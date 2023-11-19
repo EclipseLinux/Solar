@@ -1,4 +1,11 @@
 project('Solar', 'cpp')
-sources = run_command('find', '-depth', '-regex', '\.\/src\/.+\.cpp').stdout().strip()
+sources = ['src/main.cpp']
 
-executable('solar', sources, install: true)
+cli11 = dependency('cli11')
+
+executable(
+    'solar',
+    sources,
+    install: true,
+    dependencies: [cli11],
+)

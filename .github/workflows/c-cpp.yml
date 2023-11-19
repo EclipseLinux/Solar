@@ -2,19 +2,26 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Meson Build
-      uses: BSFishy/meson-build@v1.0.3
-      with:
-        action: build
-        directory: build
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v1
+
+      - name: Install Dependencies
+        run: pip install meson ninja
+
+      - name: Update WrapDB
+        run: meson wrap update-db
+
+      - name: Configure Meson
+        run: meson build
+
+      - name: Build Project
+        run: ninja -C build

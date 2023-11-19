@@ -34,3 +34,6 @@
 build
 .cache
 .vscode
+wrapdb.json
+subprojects/*-*
+subprojects/packagecache
