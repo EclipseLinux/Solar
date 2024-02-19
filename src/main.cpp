@@ -6,15 +6,6 @@
 
 auto main(int argc, const char** argv) -> int
 {
-	if (geteuid() != 0)
-	{
-		std::cout << rang::fgB::red << "Please run Solar " << rang::style::bold
-				  << "as root" << rang::style::reset << rang::fgB::red << " and try again"
-				  << rang::style::reset << std::endl;
-
-		return 1;
-	}
-
 	CLI::App app{"The package manager for Eclipse", "Solar"};
 
 	app.add_flag("-v,--verbose", G::verbose, "Enable verbose output");

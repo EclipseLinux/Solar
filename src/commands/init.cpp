@@ -1,9 +1,9 @@
 #include "../global.h"
 #include "commands.h"
+#include "rapidjson/prettywriter.h"
+#include "rapidjson/stringbuffer.h"
 #include "src/rang.hpp"
-#include <cstdlib>
-#include <iostream>
-#include <ostream>
+#include <fstream>
 
 auto Commands::Init::_register(CLI::App& app) -> CLI::App*
 {
@@ -17,29 +17,51 @@ void Commands::Init::exec(CLI::App& app)
 {
 	auto path = std::filesystem::path(G::root) / "etc" / "solar";
 
-	if (!std::filesystem::exists(path) && std::filesystem::create_directories(path))
-	{
-		std::cout << rang::style::bold << rang::fgB::green << "✓ " << rang::style::reset
-				  << rang::fgB::green << "Created " << rang::style::bold
-				  << "Solar directory" << rang::style::reset << std::endl;
-	}
-	else
-	{
-		std::cout << rang::style::bold << rang::fgB::red << "𐄂 " << rang::style::reset
-				  << rang::fgB::red << "Failed to create " << rang::style::bold
-				  << "Solar directory (/etc/solar)" << rang::style::reset << std::endl;
-	}
+	rapidjson::StringBuffer lock;
+	rapidjson::PrettyWriter<rapidjson::StringBuffer> lockWriter(lock);
 
-	std::ofstream mirrorlist;
-	mirrorlist.open(path / "mirrorlist");
-	mirrorlist << "https://raw.githubusercontent.com/EclipseLinux/SolarRegistry/main";
-	mirrorlist.close();
+	lockWriter.StartObject();
+	lockWriter.Key("packages");
+	lockWriter.StartArray();
+	lockWriter.EndArray();
+	lockWriter.EndObject();
 
-	std::cout << rang::style::bold << rang::fgB::green << "✓" << rang::style::reset
-			  << rang::fgB::green << "Created " << rang::style::bold << "mirrorlist"
-			  << rang::style::reset << std::endl;
+	rapidjson::StringBuffer config;
+	rapidjson::PrettyWriter<rapidjson::StringBuffer> configWriter(lock);
 
-	std::ofstream(path / "installed").close();
-	std::ofstream(path / "removed").close();
-	std::ofstream(path / "updated").close();
+	configWriter.StartObject();
+
+	configWriter.Key("color");
+	configWriter.String("auto");
+
+	configWriter.Key("fancyBar");
+	configWriter.String("auto");
+
+	configWriter.Key("rootDir");
+	configWriter.String("/");
+
+	configWriter.Key("arch");
+	configWriter.String("auto");
+
+	configWriter.Key("progress");
+	configWriter.Bool(true);
+
+	configWriter.Key("checkSpace");
+	configWriter.Bool(true);
+
+	configWriter.Key("parallelDownloads");
+	configWriter.String("auto");
+
+	configWriter.EndObject();
+
+	std::ofstream lockFile(path / "solar.lock.json");
+	lockFile << lock.GetString();
+	lockFile.close();
+
+	std::ofstream configFile(path / "config.json");
+	configFile << config.GetString();
+	configFile.close();
+
+	std::cout << rang::style::bold << rang::fgB::green
+			  << "✅ Created lock and config files!" << rang::style::reset << '\n';
 }

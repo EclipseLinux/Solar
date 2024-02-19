@@ -7,10 +7,11 @@ sources = [
 ]
 
 cli11 = dependency('cli11')
+rapidjson = dependency('rapidjson')
 
 executable(
     'solar',
     sources,
     install: true,
-    dependencies: [cli11],
+    dependencies: [cli11, rapidjson],
 )
