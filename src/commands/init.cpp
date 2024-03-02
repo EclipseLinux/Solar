@@ -62,6 +62,6 @@ void Commands::Init::exec(CLI::App& app)
 	configFile << config.GetString();
 	configFile.close();
 
-	std::cout << rang::style::bold << rang::fgB::green
-			  << "✅ Created lock and config files!" << rang::style::reset << '\n';
+	std::cout << rang::style::bold << rang::fgB::green << "Created lock and config files!"
+			  << rang::style::reset << '\n';
 }

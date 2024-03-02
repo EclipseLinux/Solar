@@ -1,4 +1,5 @@
 #include "CLI/CLI.hpp"
+#include "curl/curl.h"
 #include "global.h"
 #include "rang.hpp"
 #include "src/commands/commands.h"
@@ -30,6 +31,8 @@ auto main(int argc, const char** argv) -> int
 		return app.exit(e);
 	}
 
+	curl_global_init(CURL_GLOBAL_DEFAULT);
+
 	if (app.got_subcommand(install))
 	{
 		Commands::Install::exec(app);
@@ -42,6 +45,8 @@ auto main(int argc, const char** argv) -> int
 	{
 		Commands::Init::exec(app);
 	}
+
+	curl_global_cleanup();
 
 	return 0;
 }
